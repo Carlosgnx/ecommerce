@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  display: flex;
+  flex-direction: column;
+}
+li {
+  cursor: pointer;
+}
+.btn.btn-secondary.rounded-0.dropdown-toggle::after {
+  display: none;
+}

@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ecommerce-f4457": {
+      "hosting": {
+        "ecommerce": [
+          "ecommerce-ficticio"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ecommerce-f4457"
+  }
+}

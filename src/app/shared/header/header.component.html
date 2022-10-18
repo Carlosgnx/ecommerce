@@ -1,0 +1,57 @@
+<nav class="navbar py-3 navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <app-logo></app-logo>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li *ngFor="let item of navLinks" class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="item.ruta"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >{{ item.nombre }}</a
+          >
+        </li>
+      </ul>
+      <hr />
+      <ul class="navbar-nav ms-auto">
+        <li *ngIf="user" class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {{ user.email }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item">Perfil</a></li>
+            <li><a class="dropdown-item" href="#">Pedidos</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a (click)="logout()" class="dropdown-item">Cerrar sesión</a>
+            </li>
+          </ul>
+        </li>
+        <li *ngIf="!user" class="nav-item">
+          <a routerLinkActive="active" routerLink="/ingresar" class="nav-link"
+            >Iniciar sesión/Registrarse</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

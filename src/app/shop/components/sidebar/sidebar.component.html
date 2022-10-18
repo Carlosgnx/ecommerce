@@ -1,0 +1,25 @@
+<div class="text-light py-3 bg-dark text-center m-0 py-2">
+  <span>CATEGORÍAS</span>
+</div>
+<div *ngFor="let categoria of categorias" class="btn-group dropend">
+  <button
+    type="button"
+    class="overflow-hidden d-flex py-3 btn btn-secondary bg-gradient rounded-0 dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    <i [ngClass]="categoria.icono" class="bi me-2"></i>
+    <p class="m-0 overflow-hidden text-truncate">
+      {{ categoria.nombre | uppercase }}
+    </p>
+    <i class="bi bi-chevron-right ms-auto"></i>
+  </button>
+  <ul class="dropdown-menu rounded-0">
+    <li
+      *ngFor="let subcategoria of categoria.subcategorias"
+      class="dropdown-item"
+    >
+      <a class="">{{ subcategoria.nombre }}</a>
+    </li>
+  </ul>
+</div>
