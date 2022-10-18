@@ -1,0 +1,103 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-sm-12 col-lg-6">
+      <h4>Iniciar sesión</h4>
+      <hr />
+      <p class="text-secondary">Bienvenido, ingresa a tú cuenta.</p>
+      <form class="mb-5" (submit)="login()" [formGroup]="formLogin">
+        <div class="mb-3">
+          <label class="form-label">Correo electronico</label>
+          <input formControlName="email" type="email" class="form-control" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+          <input
+            formControlName="password"
+            type="password"
+            class="form-control"
+          />
+        </div>
+        <div class="mb-3 form-check">
+          <input
+            formControlName="keepSession"
+            type="checkbox"
+            class="form-check-input"
+            id="mantenerSesion"
+          />
+          <label class="form-check-label" for="mantenerSesion"
+            >Mantener sesión iniciada</label
+          >
+        </div>
+        <button
+          [disabled]="formLogin.invalid"
+          type="submit"
+          class="btn btn-primary"
+        >
+          Ingresar
+        </button>
+        <p *ngIf="loginError" class="text-danger mt-2">
+          Las credenciales proporcionadas son invalidas.
+        </p>
+      </form>
+    </div>
+    <div class="col-sm-12 col-lg-6">
+      <h4>Registrarme</h4>
+      <hr />
+      <p class="text-secondary">
+        Crea tu cuenta con tu usuario, correo electrónico y contraseña.
+      </p>
+      <form [formGroup]="formRegister" (submit)="register()">
+        <div class="mb-3">
+          <label class="form-label">Usuario</label>
+          <input formControlName="username" type="text" class="form-control" />
+          <span
+            *ngIf="isFieldInvalid('username', formRegister)"
+            class="text-danger"
+            >Debe tener al menos 5 caracteres.</span
+          >
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Correo electronico</label>
+          <input formControlName="email" type="email" class="form-control" />
+          <span
+            *ngIf="isFieldInvalid('email', formRegister)"
+            class="text-danger"
+            >Ingrese un correo electronico valido.</span
+          >
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+          <input
+            formControlName="password"
+            type="password"
+            class="form-control"
+          />
+          <span
+            *ngIf="isFieldInvalid('password', formRegister)"
+            class="text-danger"
+            >Debe tener al menos 6 caracteres</span
+          >
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Confirmar contraseña</label>
+          <input
+            formControlName="confirmPassword"
+            type="password"
+            class="form-control"
+          />
+          <span *ngIf="formRegister.errors" class="text-danger"
+            >Las contraseñas no coinciden</span
+          >
+        </div>
+
+        <button
+          [disabled]="formRegister.invalid"
+          type="submit"
+          class="btn btn-primary"
+        >
+          Registrarse
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
