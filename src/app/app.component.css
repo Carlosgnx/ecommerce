@@ -1,5 +1,23 @@
 :host {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+.loading {
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+.hidden {
+  z-index: -1;
+  transition: 500ms;
+  opacity: 0%;
 }

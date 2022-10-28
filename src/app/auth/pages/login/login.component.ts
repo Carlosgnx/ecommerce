@@ -1,14 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import {} from '@angular/fire/compat/auth';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { User } from '../../interfaces/user.interfaces';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
+import { passwordMatchingValidator } from '../../validators/register.validators';
 
 @Component({
   selector: 'app-login',
@@ -19,29 +17,37 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private userService: UserService,
+    private toastr: ToastrService
   ) {}
 
-  //Variables
+  //**Variables */
+
+  @ViewChild('loginEmailInput') loginEmailInputRef!: ElementRef;
+
   loginError: boolean = false;
 
-  formRegister: FormGroup = this.fb.group(
+  registerForm: FormGroup = this.fb.group(
     {
-      username: ['', [Validators.required, Validators.minLength(5)]],
+      name: ['', [Validators.required, Validators.minLength(1)]],
+      lastname: ['', [Validators.required, Validators.minLength(1)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
     },
     {
-      validators: [this.passwordMatchingValidator()],
+      validators: [passwordMatchingValidator()],
     }
   );
 
-  formLogin: FormGroup = this.fb.group({
+  loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     keepSession: [true],
   });
+
+  /**Functions */
 
   /**
    * Este metodo se utiliza con NgIf para validar si un campo de un formulario cumple los requisitos.
@@ -54,54 +60,64 @@ export class LoginComponent {
   }
 
   /**
-   * Este metodo se encarga de validar que las contraseñas en el registro sean iguales.
-   * @returns ValidatorFn
-   */
-  passwordMatchingValidator() {
-    return (form: AbstractControl): ValidationErrors | null => {
-      const password = form.get('password')?.value;
-      const confirmPassword = form.get('confirmPassword')?.value;
-      if (
-        password.length >= 6 &&
-        confirmPassword.length > 0 &&
-        password != confirmPassword
-      ) {
-        return { passwordNotMatching: true };
-      }
-      return null;
-    };
-  }
-
-  /**
-   * Este metodo registra un nuevo usuario en firebase.
+   * Este metodo registra un nuevo usuario en firebase auth para luego registrar sus datos en firestore database.
    */
   register() {
-    const email = this.formRegister.get('email')?.value;
-    const password = this.formRegister.get('password')?.value;
+    this.userService.loading = true;
+    const email = this.registerForm.get('email')?.value;
+    const password = this.registerForm.get('password')?.value;
+    //Este objeto se registrara en la base de datos.
+    const user: User = {
+      name: this.registerForm.get('name')?.value,
+      lastname: this.registerForm.get('lastname')?.value,
+    };
     this.authService
       .register(email, password)
-      .then(() => this.router.navigateByUrl(''))
+      .then(async (auth) => {
+        //Creamos el documento en la DB
+        await this.userService.createUser(auth.user.uid, user);
+        this.authService.logout();
+        this.registerForm.reset();
+        this.loginEmailInputRef.nativeElement.focus();
+        this.userService.loading = false;
+        this.toastr.success(
+          'Usuario registrado, ya puedes iniciar sesión.',
+          undefined,
+          {
+            timeOut: 2000,
+          }
+        );
+      })
       .catch((err) => console.log(err));
   }
 
   /**
-   * Este metodo inicia sesion en firebase y define la persistencia de la sesion dependiendo que haya elegido el usuario.
+   * Este metodo inicia sesion en firebase auth y define la persistencia de la sesion dependiendo que haya elegido el usuario.
    */
   login() {
-    const email = this.formLogin.get('email')?.value;
-    const password = this.formLogin.get('password')?.value;
-    const persistence = this.formLogin.get('keepSession')?.value
+    this.userService.loading = true;
+    const email = this.loginForm.get('email')?.value;
+    const password = this.loginForm.get('password')?.value;
+    const persistence = this.loginForm.get('keepSession')?.value
       ? 'local'
       : 'session';
     this.authService
       .login(email, password)
-      .then(() => {
+      .then((auth) => {
         this.authService.setPersistence(persistence);
-        this.router.navigateByUrl('');
+        this.userService.getUserData(auth.user.uid).subscribe((res) => {
+          //userData contiene toda la información del usuario.
+          const userData = res.data();
+          this.userService.setUserSession(userData);
+          this.router.navigateByUrl('');
+          this.loginForm.enable;
+          this.userService.loading = false;
+        });
       })
       .catch((err) => {
         console.log(err);
         this.loginError = true;
+        this.userService.loading = false;
       });
   }
 }

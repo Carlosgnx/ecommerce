@@ -3,3 +3,9 @@
   <router-outlet></router-outlet>
 </div>
 <app-footer class="d-block mt-auto bg-dark text-light"></app-footer>
+
+<!-- Loading -->
+<div [ngClass]="{ hidden: !loading }" class="loading bg-dark">
+  <p class="text-light">Cargando...</p>
+  <div class="spinner-border text-light" role="status"></div>
+</div>
