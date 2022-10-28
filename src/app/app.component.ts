@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { UserService } from './auth/services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,9 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  constructor() {}
+  constructor(private userService: UserService) {}
+
+  get loading() {
+    return this.userService.loading;
+  }
 }

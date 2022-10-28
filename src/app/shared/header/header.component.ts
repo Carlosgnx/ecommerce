@@ -1,6 +1,7 @@
-import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { UserService } from 'src/app/auth/services/user.service';
 import { NavLink } from '../interfaces/shared.interfaces';
 
 @Component({
@@ -9,9 +10,17 @@ import { NavLink } from '../interfaces/shared.interfaces';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {}
+
+  get user() {
+    return this.userService.user;
+  }
 
   navLinks: NavLink[] = [
     {
@@ -32,11 +41,10 @@ export class HeaderComponent implements OnInit {
     },
   ];
 
-  get user() {
-    return this.authService.loggedUser;
-  }
-
   logout() {
-    this.authService.logout().then(() => this.router.navigateByUrl('ingresar'));
+    this.authService.logout().then(() => {
+      this.userService.removeUserSession();
+      this.router.navigateByUrl('ingresar');
+    });
   }
 }
